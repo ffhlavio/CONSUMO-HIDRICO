@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Registro{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Editar Registro de Consumo</h2>
+    <form action="{{ url_for('editar_registro', id=registro[0]) }}" method="post">
+        <div class="mb-3">
+            <label for="data" class="form-label">Data:</label>
+            <input type="date" name="data" id="data" class="form-control" value="{{ registro[2] }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="consumo" class="form-label">Consumo (litros):</label>
+            <input type="number" name="consumo" id="consumo" class="form-control" value="{{ registro[3] }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="comentario" class="form-label">Comentário:</label>
+            <input type="text" name="comentario" id="comentario" class="form-control" value="{{ registro[4] }}">
+        </div>
+        <div class="mb-3">
+            <label for="valor_conta" class="form-label">Valor da Conta (R$):</label>
+            <input type="number" step="0.01" name="valor_conta" id="valor_conta" class="form-control" value="{{ registro[5] }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{{ url_for('historico') }}" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

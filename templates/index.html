@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="intro">
+    <h1>Bem-vindo ao Splash Blue</h1>
+    <p>Veja como você pode economizar água e ajudar o meio ambiente.</p>
+</section>
+
+<section class="stats">
+    <h2>Estatísticas de Consumo</h2>
+    <p>Dados sobre o consumo de água no Brasil e como pequenas mudanças podem gerar grandes impactos.</p>
+</section>
+
+<section class="galeria">
+    <div class="imagem-container">
+        <img src="{{ url_for('static', filename='img/gota1.jpg') }}" alt="Economizar água 1">
+        <div class="mensagem">Feche a torneira enquanto escova os dentes.</div>
+    </div>
+    <div class="imagem-container">
+        <img src="{{ url_for('static', filename='img/gota2.jpg') }}" alt="Economizar água 2">
+        <div class="mensagem">Reaproveite a água da chuva.</div>
+    </div>
+    <div class="imagem-container">
+        <img src="{{ url_for('static', filename='img/gota3.jpg') }}" alt="Economizar água 3">
+        <div class="mensagem">Use balde em vez de mangueira.</div>
+    </div>
+</section>
+{% endblock %}

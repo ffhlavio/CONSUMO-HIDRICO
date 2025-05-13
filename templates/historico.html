@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Histórico de Consumo de Água</h1>
+
+    <h2>Adicionar Novo Registro</h2>
+    <form action="/adicionar" method="post">
+        <label for="data">Data:</label>
+        <input type="date" name="data" id="data" required>
+
+        <label for="consumo">Consumo (litros):</label>
+        <input type="number" name="consumo" id="consumo" required>
+
+        <label for="valor_conta">Valor da Conta (R$):</label>
+        <input type="number" name="valor_conta" id="valor_conta" step="0.01" required>
+
+        <label for="comentario">Comentário (opcional):</label>
+        <textarea name="comentario" id="comentario" rows="2"></textarea>
+
+        <button type="submit">Adicionar Registro</button>
+    </form>
+
+    <h2>Registros Salvos</h2>
+    {% if registros %}
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Consumo (L)</th>
+                <th>Valor da Conta (R$)</th>
+                <th>Comentário</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for id, data, consumo, comentario, valor_conta in registros %}
+        <tr>
+            <td>{{ data }}</td>
+            <td>{{ consumo }}</td>
+            <td>{{ valor_conta }}</td>
+            <td>{{ comentario }}</td>
+            <td>
+                <a href="{{ url_for('editar_registro', id=id) }}">Editar</a> |
+                <a href="{{ url_for('deletar_registro', id=id) }}" onclick="return confirm('Tem certeza que deseja excluir este registro?');">Excluir</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum registro encontrado.</p>
+    {% endif %}
+</div>
+{% endblock %}

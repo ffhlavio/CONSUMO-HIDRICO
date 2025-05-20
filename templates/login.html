@@ -8,11 +8,17 @@
         <input type="text" id="username" name="username" required>
 
         <label for="password">Senha:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" required><br>
+        <label for="consentimento">
+            <input type="checkbox" id="consentimento" name="consentimento" required>
+            Concordo em compartilhar meus dados de consumo para fins de análise e melhoria do serviço.<br>
+            <a href="{{ url_for('politica_privacidade') }}" target="_blank">(Ver Política de Privacidade)</a>
 
         <button type="submit">Entrar</button>
     </form>
 
     <p>Não tem uma conta? <a href="/cadastro" class="cadastro-link">Cadastre-se aqui</a></p>
 </div>
+
+
 {% endblock %}

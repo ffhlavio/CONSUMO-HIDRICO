@@ -238,6 +238,13 @@ def graficos():
         if conn:
             conn.close()
 
+ #politica de privacidade           
+@app.route('/politica_privacidade')
+def politica_privacidade():
+    return render_template('politica_privacidade.html') 
+
+
+
 # Executar o app
 if __name__ == '__main__':
     app.run(debug=True)

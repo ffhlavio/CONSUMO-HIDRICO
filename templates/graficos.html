@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Gráficos de Consumo</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <canvas id="consumoChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('historico') }}" class="btn btn-secondary">Voltar ao Histórico</a>
+</div>
+
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar se existem dados
+        {% if datas and consumos %}
+            const ctx = document.getElementById('consumoChart').getContext('2d');
+            
+            // Converter datas Python para formato JavaScript
+            const labels = {{ datas|tojson }};
+            const dataValues = {{ consumos|tojson }};
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Consumo',
+                        data: dataValues,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Consumo'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        }
+                    }
+                }
+            });
+        {% else %}
+            console.log("Nenhum dado disponível para exibir o gráfico");
+            document.getElementById('consumoChart').innerHTML = 
+                '<p class="text-muted">Nenhum dado disponível para exibir o gráfico</p>';
+        {% endif %}
+    });
+</script>
+{% endblock %}

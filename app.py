@@ -204,6 +204,40 @@ def logout():
     flash('Você saiu da conta.', 'success')
     return redirect(url_for('index'))
 
+# Gráficos e estatísticas de consumo
+@app.route('/graficos')
+def graficos():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT strftime('%Y-%m-%d', data) as data_formatada, consumo 
+            FROM historico 
+            WHERE username=? 
+            ORDER BY data
+            """, (username,))
+        
+        registros = cur.fetchall()
+        datas = [registro[0] for registro in registros]
+        consumos = [registro[1] for registro in registros]
+        
+        return render_template('graficos.html', 
+                            datas=datas, 
+                            consumos=consumos)
+    
+    except sqlite3.Error as e:
+        flash(f"Erro ao acessar dados: {str(e)}", 'danger')
+        return redirect(url_for('historico'))
+    
+    finally:
+        if conn:
+            conn.close()
+
 # Executar o app
 if __name__ == '__main__':
     app.run(debug=True)

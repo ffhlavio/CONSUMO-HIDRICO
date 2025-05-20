@@ -5,12 +5,10 @@
 
         <h1>Histórico de Consumo de Água</h1>
 
-<a href="{{ url_for('graficos') }}" class="btn btn-info mb-3">Ver Gráficos</a>
-
     <h2>Adicionar Novo Registro</h2>
     <form action="/adicionar" method="post">
         <label for="data">Data:</label>
-        <input type="date" name="data" id="data" required>
+        <input type="date" name="data" id="data" required><br>
 
         <label for="consumo">Consumo (litros):</label>
         <input type="number" name="consumo" id="consumo" required>
@@ -25,6 +23,7 @@
     </form>
 
     <h2>Registros Salvos</h2>
+    <a href="{{ url_for('graficos') }}" class="btn btn-info mb-3">Ver Gráficos</a>
     {% if registros %}
     <table>
         <thead>

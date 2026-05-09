@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#f4f4f4;
+            padding:40px;
+        }
+
+        h1{
+            color:#333;
+        }
+
+        table{
+            width:100%;
+            border-collapse: collapse;
+            background:white;
+        }
+
+        th, td{
+            padding:12px;
+            border:1px solid #ddd;
+            text-align:center;
+        }
+
+        th{
+            background:#007BFF;
+            color:white;
+        }
+
+        tr:nth-child(even){
+            background:#f2f2f2;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <h1>Monitoramento IoT</h1>
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Dispositivo</th>
+            <th>Consumo</th>
+            <th>Temperatura</th>
+            <th>Data</th>
+        </tr>
+
+        {% for leitura in leituras %}
+
+        <tr>
+            <td>{{ leitura[0] }}</td>
+            <td>{{ leitura[1] }}</td>
+            <td>{{ leitura[2] }}</td>
+            <td>{{ leitura[3] }} °C</td>
+            <td>{{ leitura[4] }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</body>
+</html>

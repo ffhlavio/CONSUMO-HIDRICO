@@ -218,6 +218,36 @@ def logout():
     return redirect(url_for('index'))
 
 
+# Dashboard IoT
+@app.route('/iot')
+def dashboard_iot():
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('''
+        SELECT
+            leituras.id,
+            dispositivos.nome,
+            leituras.consumo,
+            leituras.temperatura,
+            leituras.criado_em
+        FROM leituras
+        JOIN dispositivos
+        ON leituras.dispositivo_id = dispositivos.id
+        ORDER BY leituras.criado_em DESC
+    ''')
+
+    leituras = cur.fetchall()
+
+    conn.close()
+
+    return render_template(
+        'iot.html',
+        leituras=leituras
+    )
+
+
 # API IoT
 @app.route('/api/leituras', methods=['POST'])
 def receber_leitura():

@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Splash Blue</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
     <style>
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -48,32 +51,48 @@
         nav ul li a:hover {
             text-decoration: underline;
         }
+
     </style>
+
 </head>
+
 <body>
+
     <header>
+
         <nav>
+
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/sobre">Sobre</a></li>
+                <li><a href="/iot">Monitoramento IoT</a></li>
                 <li><a href="/login">Login</a></li>
             </ul>
+
         </nav>
+
     </header>
 
     <main>
-        
+
         {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class="flash-messages">
-      {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-        
+
+            {% if messages %}
+
+                <ul class="flash-messages">
+
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+
+                </ul>
+
+            {% endif %}
+
+        {% endwith %}
+
         {% block content %}{% endblock %}
+
     </main>
 
     <footer>
@@ -81,5 +100,6 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 </body>
 </html>

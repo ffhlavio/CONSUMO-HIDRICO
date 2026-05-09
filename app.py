@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import psycopg2
 from psycopg2 import IntegrityError
 from dotenv import load_dotenv
@@ -216,6 +216,65 @@ def logout():
     session.pop('username', None)
     flash('Você saiu da conta.', 'success')
     return redirect(url_for('index'))
+
+
+# API IoT
+@app.route('/api/leituras', methods=['POST'])
+def receber_leitura():
+
+    try:
+        dados = request.get_json()
+
+        token = dados.get('token')
+        consumo = dados.get('consumo')
+        temperatura = dados.get('temperatura')
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # verifica dispositivo
+        cur.execute(
+            "SELECT id FROM dispositivos WHERE token=%s",
+            (token,)
+        )
+
+        dispositivo = cur.fetchone()
+
+        if not dispositivo:
+            conn.close()
+
+            return jsonify({
+                'status': 'erro',
+                'mensagem': 'Dispositivo não autorizado'
+            }), 401
+
+        dispositivo_id = dispositivo[0]
+
+        # salva leitura
+        cur.execute('''
+            INSERT INTO leituras
+            (dispositivo_id, consumo, temperatura)
+            VALUES (%s, %s, %s)
+        ''', (
+            dispositivo_id,
+            consumo,
+            temperatura
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            'status': 'sucesso',
+            'mensagem': 'Leitura recebida'
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            'status': 'erro',
+            'mensagem': str(e)
+        }), 500
 
 
 # Executar o app

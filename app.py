@@ -32,7 +32,9 @@ def sobre():
 # Cadastro de usuário
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
+
     if request.method == 'POST':
+
         dados = (
             request.form['full_name'],
             request.form['email'],
@@ -44,6 +46,7 @@ def cadastro():
         )
 
         try:
+
             conn = get_db_connection()
             cur = conn.cursor()
 
@@ -57,10 +60,13 @@ def cadastro():
             conn.close()
 
             flash('Usuário cadastrado com sucesso!', 'success')
+
             return redirect(url_for('login'))
 
         except IntegrityError:
+
             flash('Nome de usuário já existe. Escolha outro.', 'danger')
+
             return redirect(url_for('cadastro'))
 
     return render_template('cadastro.html')
@@ -69,7 +75,9 @@ def cadastro():
 # Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
     if request.method == 'POST':
+
         username = request.form['username']
         password = request.form['password']
 
@@ -82,13 +90,19 @@ def login():
         )
 
         user = cur.fetchone()
+
         conn.close()
 
         if user:
+
             session['username'] = username
+
             flash('Login realizado com sucesso!', 'success')
+
             return redirect(url_for('historico'))
+
         else:
+
             flash('Usuário ou senha inválidos.', 'danger')
 
     return render_template('login.html')
@@ -97,6 +111,7 @@ def login():
 # Histórico de consumo
 @app.route('/historico')
 def historico():
+
     if 'username' not in session:
         return redirect(url_for('login'))
 
@@ -111,6 +126,7 @@ def historico():
     )
 
     registros = cur.fetchall()
+
     conn.close()
 
     return render_template('historico.html', registros=registros)
@@ -119,10 +135,12 @@ def historico():
 # Adicionar novo registro
 @app.route('/adicionar', methods=['POST'])
 def adicionar():
+
     if 'username' not in session:
         return redirect(url_for('login'))
 
     username = session['username']
+
     data = request.form['data']
     consumo = request.form['consumo']
     comentario = request.form.get('comentario')
@@ -138,7 +156,13 @@ def adicionar():
         INSERT INTO historico
         (username, data, consumo, comentario, valor_conta)
         VALUES (%s, %s, %s, %s, %s)
-    ''', (username, data, consumo, comentario, valor_conta))
+    ''', (
+        username,
+        data,
+        consumo,
+        comentario,
+        valor_conta
+    ))
 
     conn.commit()
     conn.close()
@@ -149,6 +173,7 @@ def adicionar():
 # Editar registro
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editar_registro(id):
+
     if 'username' not in session:
         return redirect(url_for('login'))
 
@@ -156,6 +181,7 @@ def editar_registro(id):
     cur = conn.cursor()
 
     if request.method == 'POST':
+
         data = request.form['data']
         consumo = request.form['consumo']
         comentario = request.form.get('comentario')
@@ -163,27 +189,52 @@ def editar_registro(id):
 
         cur.execute('''
             UPDATE historico
-            SET data=%s, consumo=%s, comentario=%s, valor_conta=%s
-            WHERE id=%s AND username=%s
-        ''', (data, consumo, comentario, valor_conta, id, session['username']))
+            SET data=%s,
+                consumo=%s,
+                comentario=%s,
+                valor_conta=%s
+            WHERE id=%s
+            AND username=%s
+        ''', (
+            data,
+            consumo,
+            comentario,
+            valor_conta,
+            id,
+            session['username']
+        ))
 
         conn.commit()
         conn.close()
 
         flash('Registro atualizado com sucesso.', 'success')
+
         return redirect(url_for('historico'))
 
     cur.execute('''
-        SELECT id, username, data, consumo, comentario, valor_conta
+        SELECT
+            id,
+            username,
+            data,
+            consumo,
+            comentario,
+            valor_conta
         FROM historico
-        WHERE id=%s AND username=%s
-    ''', (id, session['username']))
+        WHERE id=%s
+        AND username=%s
+    ''', (
+        id,
+        session['username']
+    ))
 
     registro = cur.fetchone()
+
     conn.close()
 
     if not registro:
+
         flash('Registro não encontrado.', 'danger')
+
         return redirect(url_for('historico'))
 
     return render_template('editar.html', registro=registro)
@@ -192,6 +243,7 @@ def editar_registro(id):
 # Deletar registro
 @app.route('/deletar/<int:id>')
 def deletar_registro(id):
+
     if 'username' not in session:
         return redirect(url_for('login'))
 
@@ -207,14 +259,18 @@ def deletar_registro(id):
     conn.close()
 
     flash('Registro excluído com sucesso.', 'success')
+
     return redirect(url_for('historico'))
 
 
 # Logout
 @app.route('/logout')
 def logout():
+
     session.pop('username', None)
+
     flash('Você saiu da conta.', 'success')
+
     return redirect(url_for('index'))
 
 
@@ -225,6 +281,7 @@ def dashboard_iot():
     conn = get_db_connection()
     cur = conn.cursor()
 
+    # eventos da bomba
     cur.execute('''
         SELECT
             id,
@@ -240,11 +297,73 @@ def dashboard_iot():
 
     eventos = cur.fetchall()
 
+    # consumo total
+    cur.execute("""
+        SELECT COALESCE(SUM(volume_m3), 0)
+        FROM bomba_eventos
+    """)
+
+    consumo_total = cur.fetchone()[0]
+
+    # total de eventos
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM bomba_eventos
+    """)
+
+    total_eventos = cur.fetchone()[0]
+
+    # status atual
+    cur.execute("""
+        SELECT evento
+        FROM bomba_eventos
+        ORDER BY timestamp DESC
+        LIMIT 1
+    """)
+
+    ultimo_evento = cur.fetchone()
+
+    if ultimo_evento:
+        status_bomba = ultimo_evento[0]
+    else:
+        status_bomba = "SEM DADOS"
+
     conn.close()
 
     return render_template(
         'iot.html',
-        eventos=eventos
+        eventos=eventos,
+        consumo_total=consumo_total,
+        total_eventos=total_eventos,
+        status_bomba=status_bomba
+    )
+
+
+# Relatório mensal
+@app.route('/relatorio')
+def relatorio():
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('''
+        SELECT
+            mes,
+            total_ligadas,
+            total_desligadas,
+            horas_funcionamento,
+            volume_total_m3
+        FROM relatorio_mensal
+        ORDER BY mes DESC
+    ''')
+
+    relatorios = cur.fetchall()
+
+    conn.close()
+
+    return render_template(
+        'relatorio.html',
+        relatorios=relatorios
     )
 
 
@@ -253,6 +372,7 @@ def dashboard_iot():
 def receber_leitura():
 
     try:
+
         dados = request.get_json()
 
         token = dados.get('token')
@@ -271,6 +391,7 @@ def receber_leitura():
         dispositivo = cur.fetchone()
 
         if not dispositivo:
+
             conn.close()
 
             return jsonify({

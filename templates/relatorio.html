@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Mensal</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background:#f4f4f4;
+            padding:40px;
+        }
+
+        h1{
+            color:#333;
+            margin-bottom:30px;
+        }
+
+        table{
+            width:100%;
+            border-collapse: collapse;
+            background:white;
+        }
+
+        th, td{
+            padding:12px;
+            border:1px solid #ddd;
+            text-align:center;
+        }
+
+        th{
+            background:#007BFF;
+            color:white;
+        }
+
+        tr:nth-child(even){
+            background:#f2f2f2;
+        }
+
+        .btn{
+            display:inline-block;
+            margin-bottom:20px;
+            padding:10px 18px;
+            background:#007BFF;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <a href="/iot" class="btn">
+        ← Voltar Dashboard
+    </a>
+
+    <h1>Relatório Mensal Operacional</h1>
+
+    <table>
+
+        <tr>
+            <th>Mês</th>
+            <th>Total Ligadas</th>
+            <th>Total Desligadas</th>
+            <th>Horas Funcionamento</th>
+            <th>Volume Total (m³)</th>
+        </tr>
+
+        {% for relatorio in relatorios %}
+
+        <tr>
+
+            <td>
+                {{ relatorio[0].strftime('%m/%Y') }}
+            </td>
+
+            <td>
+                {{ relatorio[1] }}
+            </td>
+
+            <td>
+                {{ relatorio[2] }}
+            </td>
+
+            <td>
+                {{ "%.2f"|format(relatorio[3]) }}
+            </td>
+
+            <td>
+                {{ "%.4f"|format(relatorio[4]) }}
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</body>
+</html>

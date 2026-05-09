@@ -227,24 +227,24 @@ def dashboard_iot():
 
     cur.execute('''
         SELECT
-            leituras.id,
-            dispositivos.nome,
-            leituras.consumo,
-            leituras.temperatura,
-            leituras.criado_em
-        FROM leituras
-        JOIN dispositivos
-        ON leituras.dispositivo_id = dispositivos.id
-        ORDER BY leituras.criado_em DESC
+            id,
+            timestamp,
+            evento,
+            duracao_segundos,
+            volume_m3,
+            vazao_bomba
+        FROM bomba_eventos
+        ORDER BY timestamp DESC
+        LIMIT 50
     ''')
 
-    leituras = cur.fetchall()
+    eventos = cur.fetchall()
 
     conn.close()
 
     return render_template(
         'iot.html',
-        leituras=leituras
+        eventos=eventos
     )
 
 

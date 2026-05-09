@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard IoT</title>
+    <title>Dashboard Operacional da Bomba</title>
 
     <style>
 
@@ -37,31 +37,79 @@
             background:#f2f2f2;
         }
 
+        .ligou{
+            color:green;
+            font-weight:bold;
+        }
+
+        .desligou{
+            color:red;
+            font-weight:bold;
+        }
+
     </style>
 
 </head>
+
 <body>
 
-    <h1>Monitoramento IoT</h1>
+    <h1>Monitoramento Operacional da Bomba</h1>
 
     <table>
 
         <tr>
             <th>ID</th>
-            <th>Dispositivo</th>
-            <th>Consumo</th>
-            <th>Temperatura</th>
-            <th>Data</th>
+            <th>Horário</th>
+            <th>Evento</th>
+            <th>Duração (s)</th>
+            <th>Volume (m³)</th>
+            <th>Vazão da Bomba</th>
         </tr>
 
-        {% for leitura in leituras %}
+        {% for evento in eventos %}
 
         <tr>
-            <td>{{ leitura[0] }}</td>
-            <td>{{ leitura[1] }}</td>
-            <td>{{ leitura[2] }}</td>
-            <td>{{ leitura[3] }} °C</td>
-            <td>{{ leitura[4] }}</td>
+
+            <td>{{ evento[0] }}</td>
+
+            <td>
+                {{ evento[1].strftime('%d/%m/%Y %H:%M:%S') }}
+            </td>
+
+            <td>
+
+                {% if evento[2] == 'LIGOU' %}
+                    <span class="ligou">🟢 LIGOU</span>
+                {% else %}
+                    <span class="desligou">🔴 DESLIGOU</span>
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if evento[3] %}
+                    {{ "%.2f"|format(evento[3]) }}
+                {% else %}
+                    —
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if evento[4] %}
+                    {{ "%.4f"|format(evento[4]) }}
+                {% else %}
+                    —
+                {% endif %}
+
+            </td>
+
+            <td>
+                {{ evento[5] }}
+            </td>
+
         </tr>
 
         {% endfor %}
